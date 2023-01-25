@@ -40,5 +40,9 @@ class DetailUpdateExpenseView(APIView):
 
     def delete(self, request, expense_id):
         expense = get_object_or_404(Expense, id=expense_id)
+        for borrower in expense.borrowers.all():
+            # Deleting all the related borrowers
+            Borrower.objects.filter(id=borrower.id).delete()
+        # deleting the expense itself.
         expense.delete()
         return Response(status=status.HTTP_204_NO_CONTENT)
