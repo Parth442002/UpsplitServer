@@ -18,8 +18,9 @@ class ExpenseSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Expense
-        fields = ('id', 'lender', 'borrowers', 'amount_borrowed', 'amount_repayed',
-                  'timestamp', 'title', 'category')
+        fields = ('id',
+                  'timestamp', 'title', 'desc', 'lender', 'borrowers', 'totalexpense', 'lenders_share', "totalborrowed", "totalrepayed", "is_settled"
+                  )
 
     def create(self, validated_data):
         borrowers_data = validated_data.pop('borrowers')
@@ -35,14 +36,17 @@ class ExpenseSerializer(serializers.ModelSerializer):
         borrowers_data = validated_data.pop('borrowers')
 
         instance.lender = validated_data.get('lender', instance.lender)
-        instance.amount_borrowed = validated_data.get(
-            'amount_borrowed', instance.amount_borrowed)
-        instance.amount_repayed = validated_data.get(
-            'amount_repayed', instance.amount_repayed)
-        instance.timestamp = validated_data.get(
-            'timestamp', instance.timestamp)
-        instance.title = validated_data.get('title', instance.title)
-        instance.category = validated_data.get('category', instance.category)
+
+        instance.lenders_share = validated_data.get(
+            'lenders_share', instance.lenders_share)
+        instance.totalexpense = validated_data.get(
+            'totalexpense', instance.totalexpense)
+        instance.totalborrowed = validated_data.get(
+            'totalborrowed', instance.totalborrowed)
+        instance.totalrepayed = validated_data.get(
+            'total_borrowed', instance.totalrepayed)
+        instance.is_settled = validated_data.get(
+            'is_settled', instance.is_settled)
 
         # update or create borrowers
         instance.borrowers.all().delete()

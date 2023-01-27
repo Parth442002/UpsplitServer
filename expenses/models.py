@@ -23,22 +23,20 @@ class Expense(models.Model):
         primary_key=True,
         default=uuid.uuid4,
         editable=False)
+    timestamp = models.DateTimeField(auto_now_add=True)
+    title = models.CharField(max_length=255)
+    desc = models.TextField(max_length=300, blank=True, null=True)
+
     lender = models.ForeignKey(
         user_model, on_delete=models.CASCADE, related_name='expenses_lent')
     borrowers = models.ManyToManyField(
-        Borrower, related_name='expenses_borrowed', blank=True, null=True)
-    amount_borrowed = models.DecimalField(max_digits=8, decimal_places=2)
-    amount_repayed = models.DecimalField(max_digits=8, decimal_places=2)
-    timestamp = models.DateTimeField(auto_now_add=True)
-    title = models.CharField(max_length=255)
-    category = models.CharField(max_length=255)
+        Borrower, related_name='expenses_borrowed')
 
-    @property
-    def borrower_details(self):
-        borrower_details = {}
-        for borrower in self.borrowers.all():
-            borrower_details[borrower.user.username] = {
-                'amount_borrowed': borrower.amount_borrowed,
-                'amount_repayed': borrower.amount_repayed,
-            }
-        return borrower_details
+    totalexpense = models.DecimalField(max_digits=8, decimal_places=2)
+    lenders_share = models.DecimalField(
+        max_digits=8, decimal_places=2, blank=True, null=True)
+    totalborrowed = models.DecimalField(
+        max_digits=8, decimal_places=2, blank=True, null=True)
+    totalrepayed = models.DecimalField(
+        max_digits=8, decimal_places=2, blank=True, null=True)
+    is_settled = models.BooleanField(default=False)
