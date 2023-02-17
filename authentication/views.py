@@ -7,7 +7,7 @@ from rest_framework import status, permissions
 
 
 from .models import Account
-from .serializers import MyTokenObtainPairSerializer
+from .serializers import MyTokenObtainPairSerializer, ProfileSerializer
 from django.contrib.auth import get_user_model
 
 user_model = get_user_model()
@@ -18,7 +18,6 @@ class AccountLoginView(TokenObtainPairView):
     serializer_class = MyTokenObtainPairSerializer
 
 
-'''
 class AccountLogoutView(APIView):
     permission_classes = (permissions.IsAuthenticated,)
 
@@ -39,4 +38,13 @@ class AccountLogoutView(APIView):
         except Exception as e:
             return Response(status=status.HTTP_400_BAD_REQUEST)
 
-'''
+
+class AccountProfileView(APIView):
+    permission_classes = (permissions.IsAuthenticated,)
+
+    def get(self, request):
+        x = user_model.objects.get(id=request.user.id)
+        serializer = ProfileSerializer(x,)
+        if serializer:
+            return Response(serializer.data, status=status.HTTP_200_OK)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)

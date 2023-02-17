@@ -15,3 +15,9 @@ class MyTokenObtainPairSerializer(TokenObtainPairSerializer):
         token["id"] = str(user.id)
 
         return token
+
+
+class ProfileSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Account
+        fields = ("__all__")

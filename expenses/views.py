@@ -1,4 +1,5 @@
 from rest_framework import status
+from django.db.models import Q
 from rest_framework.decorators import api_view
 from rest_framework.response import Response
 from rest_framework.views import APIView
@@ -23,7 +24,9 @@ class ExpenseList(generics.ListAPIView):
 
 class UserExpenseList(APIView):
     def get(self, request, user_id):
-        expenses = Expense.objects.filter(borrowers__user__id=user_id)
+        expenses = Expense.objects.filter(Q(
+            borrowers__user__id=user_id
+        ) | Q(lender__id=user_id))
         serializer = ExpenseSerializer(expenses, many=True)
         if serializer:
             return Response(serializer.data, status=status.HTTP_200_OK)
