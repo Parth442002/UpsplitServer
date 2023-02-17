@@ -15,10 +15,19 @@ def get_object_or_404(model, *args, **kwargs):
         raise Http404()
 
 
-class ExpenseList(generics.ListCreateAPIView):
+class ExpenseList(generics.ListAPIView):
     queryset = Expense.objects.all()
     serializer_class = ExpenseSerializer
     permission_classes = [permissions.AllowAny]
+
+
+class UserExpenseList(APIView):
+    def get(self, request, user_id):
+        expenses = Expense.objects.filter(borrowers__user__id=user_id)
+        serializer = ExpenseSerializer(expenses, many=True)
+        if serializer:
+            return Response(serializer.data, status=status.HTTP_200_OK)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 
 class DetailUpdateExpenseView(APIView):
@@ -46,3 +55,13 @@ class DetailUpdateExpenseView(APIView):
         # deleting the expense itself.
         expense.delete()
         return Response(status=status.HTTP_204_NO_CONTENT)
+
+
+class RepayExpenseView(APIView):
+
+    def post(self, request, expense_id, borrower_id):
+        expense = get_object_or_404(Expense, id=expense_id)
+        borrower = expense.borrowers.get(id=borrower_id)
+        data = request.POST.get("amount_repayed")
+        print(data, "workig")
+        return Response(status=status.HTTP_202_ACCEPTED)
